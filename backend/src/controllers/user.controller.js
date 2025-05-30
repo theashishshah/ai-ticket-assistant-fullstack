@@ -50,3 +50,58 @@ export const signup = async (req, res) => {
         });
     }
 };
+
+export const login = async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(401).json({
+            success: false,
+            message: "All fields are required, try again.",
+        });
+    }
+
+    try {
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            res.status(401).json({
+                success: false,
+                message: "User doesn't exist with this email id, try again.",
+                email,
+            });
+        }
+
+        const isPasswordMatched = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordMatched) {
+            res.status(401).json({
+                success: false,
+                message: "Incorrect password",
+                password,
+            });
+        }
+
+        const jwtToken = jwt.sign(
+            {
+                _id: user._id,
+                role: user.role,
+            },
+            process.env.JWT_SECRET,
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "User logged in.",
+            user,
+            jwtToken,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error while logging user",
+            error,
+        });
+    }
+};
+
