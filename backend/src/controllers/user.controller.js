@@ -1,0 +1,52 @@
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import User from "../models/user.model.js";
+import inngest from "../inngest/client.js";
+
+export const signup = async (req, res) => {
+    const { email, password, skills = [] } = req.body;
+
+    if (!email || !password) {
+        return res.status(401).json({
+            success: false,
+            message: "All fields are required, try again.",
+        });
+    }
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const user = await User.create({
+            email,
+            password: hashedPassword,
+            skills,
+        });
+
+        // fire up inngest event because it is containing the whole things
+        await inngest.send({
+            name: "user/signup",
+            data: { email },
+        });
+
+        const jwtToken = jwt.sign(
+            {
+                _id: user._id,
+                role: user.role,
+            },
+            process.env.JWT_SECRET,
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "User signed in successfully.",
+            jwtToken,
+            user,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error while signning user",
+            error,
+        });
+    }
+};
