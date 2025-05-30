@@ -140,3 +140,41 @@ export const logout = async (req, res) => {
         });
     }
 };
+
+export const updateUser = async (req, res) => {
+    const { skills = [], role, email } = req.body;
+
+    try {
+        if (req.user?.role !== "Admin" || role !== "Admin") {
+            return res.status(401).json({
+                success: false,
+                message: "Forbidden to modify.",
+            });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "User doesn't exist with this email.",
+            });
+        }
+
+        const updatedUser = await User.updateOne(
+            { email },
+            { skills: skills.length ? skills : user.skills, role },
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "User updated successfully.",
+            updateUser,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error while updating user",
+            error,
+        });
+    }
+};
