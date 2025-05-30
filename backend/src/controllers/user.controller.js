@@ -105,3 +105,38 @@ export const login = async (req, res) => {
     }
 };
 
+export const logout = async (req, res) => {
+    console.log("What's inside headers", req.headers);
+
+    const token = req.headers.authorization.split(" ")[1];
+
+    if (!token) {
+        return res.status(401).json({
+            success: false,
+            message: "Unauthorized user.",
+        });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log("Decoded value after verifying token: ", decoded);
+
+        if (!decoded) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized user.",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "User logged out successfully.",
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error while logging out user",
+            error,
+        });
+    }
+};
