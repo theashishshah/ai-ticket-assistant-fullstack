@@ -178,3 +178,29 @@ export const updateUser = async (req, res) => {
         });
     }
 };
+
+export const getUsers = async (req, res) => {
+    const { role } = req.body;
+
+    try {
+        if (req.user?.role !== "Admin" || role !== "Admin") {
+            return res.status(401).json({
+                success: false,
+                message: "Forbidden to get user's detail.",
+            });
+        }
+
+        const users = await User.find().select("-password");
+        res.status(200).json({
+            success: true,
+            message: "Retrived all users successfully.",
+            users,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error while getting user",
+            error,
+        });
+    }
+};
