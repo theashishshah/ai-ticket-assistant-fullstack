@@ -8,7 +8,6 @@ const dbConnect = async () => {
             autoIndex: false,
             maxPoolSize: 10,
         });
-
         console.log("✅ Database connected successfully.");
     } catch (error) {
         console.log(process.env.MONGODB_URI);
