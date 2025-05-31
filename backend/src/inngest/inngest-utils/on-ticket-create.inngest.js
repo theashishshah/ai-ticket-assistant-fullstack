@@ -1,4 +1,4 @@
-import inngest from "../client.js";
+import { inngest } from "../client.js";
 import analyzeTicket from "../../utils/ai.util.js";
 import User from "../../models/user.model.js";
 import { Ticket } from "../../models/ticket.model.js";
@@ -7,7 +7,7 @@ import sendMail from "../../utils/mailer.util.js";
 
 export const onTicketCreated = inngest.createFunction(
     { id: "on-ticket-creation", retries: 2 },
-    { event: "ti" },
+    { event: "ticket/created" },
     async ({ event, step }) => {
         try {
             const { ticketId } = event.data;
