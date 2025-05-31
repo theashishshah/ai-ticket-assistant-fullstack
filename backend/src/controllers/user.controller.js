@@ -5,7 +5,6 @@ import { inngest } from "../inngest/client.js";
 
 export const signup = async (req, res) => {
     const { email, password, skills = [] } = req.body;
-
     if (!email || !password) {
         return res.status(401).json({
             success: false,
