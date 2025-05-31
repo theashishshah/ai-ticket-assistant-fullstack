@@ -38,7 +38,7 @@ createRoot(document.getElementById("root")).render(
                     }
                 />
                 <Route
-                    path="/singup"
+                    path="/signup"
                     element={
                         <CheckAuth protected={false}>
                             <Singup />
