@@ -66,3 +66,37 @@ export const getTickets = async (req, res) => {
         });
     }
 };
+
+export const getTicket = async (req, res) => {
+    const user = req.user;
+    let ticket;
+    try {
+        if (user.role !== "user") {
+            ticket = await Ticket.findById(req.params.id).populate("assignedTo", ["email", "_id"]);
+        } else {
+            ticket = await Ticket.findOne({
+                createdBy: user._id,
+                _id: req.params.id,
+            }).select("title description status createdAt");
+        }
+
+        if (!ticket) {
+            return res.status(404).json({
+                success: false,
+                message: "Ticket not found",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Ticket fetched successfully.",
+            ticket,
+        });
+    } catch (error) {
+        console.error("Error fetching ticket", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+};
