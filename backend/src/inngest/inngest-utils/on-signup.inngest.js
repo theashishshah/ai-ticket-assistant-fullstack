@@ -29,7 +29,7 @@ export const onUserSignUp = inngest.createFunction(
 
             return { success: true };
         } catch (error) {
-            console.error(`❌ Error running signup step ${error}`);
+            console.error(`❌ Error running signup steps(pipeline) ${error}`);
             return { success: false };
         }
     },

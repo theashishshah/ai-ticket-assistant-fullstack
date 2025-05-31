@@ -25,7 +25,7 @@ const analyzeTicket = async (ticket) => {
 
                 Repeat: Do not wrap your output in markdown or code fences.`,
     });
-    
+
     const response =
         await supportAgent.run(`You are a ticket triage agent. Only return a strict JSON object with no extra text, headers, or markdown.
     
@@ -39,7 +39,7 @@ const analyzeTicket = async (ticket) => {
 Respond ONLY in this JSON format and do not include any other text or markdown in the answer:
 
 {
-"summary": "Short summary of the ticket",
+"summary": "Short summary of the ticket", 
 "priority": "high",
 "helpfulNotes": "Here are useful tips...",
 "relatedSkills": ["React", "Node.js"]
