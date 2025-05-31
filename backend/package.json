@@ -5,6 +5,7 @@
     "type": "module",
     "scripts": {
         "nodemon": "node ./src/server.js",
+        "inngest-dev": "npx inngest-cli@latest dev",
         "format": "prettier --write .",
         "format:check": "prettier --check ."
     },
