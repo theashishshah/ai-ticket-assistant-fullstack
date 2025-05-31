@@ -3,6 +3,7 @@ import analyzeTicket from "../../utils/ai.util.js";
 import User from "../../models/user.model.js";
 import { Ticket } from "../../models/ticket.model.js";
 import { NonRetriableError } from "inngest";
+import sendMail from "../../utils/mailer.util.js";
 
 export const onTicketCreated = inngest.createFunction(
     { id: "on-ticket-creation", retries: 2 },
@@ -64,6 +65,20 @@ export const onTicketCreated = inngest.createFunction(
                 });
                 return user;
             });
+
+            await step.run("send-email-notification", async () => {
+                // find the  moderator and send the notifiation to him
+                if (assignedModerator) {
+                    const updatedTicket = await Ticket.findById(ticket._id);
+                    await sendMail(
+                        assignedModerator.email,
+                        "Ticket assigned",
+                        `A new ticket assigned to you ${updatedTicket.title}`,
+                    );
+                }
+            });
+
+            return { success: true };
         } catch (error) {
             console.error(`❌ Error running ticket steps(pipeline) ${error}`);
             return { success: false };
