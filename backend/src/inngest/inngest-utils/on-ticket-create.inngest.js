@@ -41,6 +41,29 @@ export const onTicketCreated = inngest.createFunction(
                 }
                 return skills;
             });
+
+            // if skilss matches then assign the moderator if moderator exist in db
+            const assignedModerator = await step.run("assign-moderator", async () => {
+                let user = await User.findOne({
+                    role: "moderator",
+                    skills: {
+                        $elemMatch: {
+                            $regex: relatedSkills.join("|"),
+                            $options: "i",
+                        },
+                    },
+                });
+
+                if (!user) {
+                    user = await User.findOne({
+                        role: "admin",
+                    });
+                }
+                await Ticket.findByIdAndUpdate(ticket._id, {
+                    assignedTo: user?._id || null,
+                });
+                return user;
+            });
         } catch (error) {
             console.error(`❌ Error running ticket steps(pipeline) ${error}`);
             return { success: false };
